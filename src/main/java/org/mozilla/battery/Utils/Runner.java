@@ -16,6 +16,7 @@ public class Runner {
         logger.info("Starting timer ...");
         Timer timer = new Timer();
         logger.info("Checking battery status ...");
+        logger.info("Battery checked");
         while (percent > 5) {
             if (("Offline").equals(AccessBatteryInfo.batteryInfo(AccessBatteryInfo.AC_LINE))) {
                 logger.info("Status is offline, continuing running process");
