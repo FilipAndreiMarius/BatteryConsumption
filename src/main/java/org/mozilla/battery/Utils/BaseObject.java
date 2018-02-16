@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -20,10 +20,9 @@ public class BaseObject {
     public static WebDriver driver;
     public WebDriverWait wait;
 
-
-
     public BaseObject(){
         driver = DriverInstance.getInstance();
+        PageFactory.initElements(driver,this);
         driverSleep(1000);
     }
 
@@ -49,9 +48,9 @@ public class BaseObject {
     }
 
 
-    public void click(WebElement element) {
-        waitForElementToBeClickable(element);
-        element.click();
+    public void click(WebElement locator) {
+        waitForElementToBeClickable(locator);
+        locator.click();
     }
 
     public void click(By selector) {
@@ -59,18 +58,15 @@ public class BaseObject {
         element.click();
     }
 
-    public void sendKeys(By selector, String value) {
-        WebElement element = getElement(selector);
-        element.sendKeys(value);
-        element.click();
+    public void sendKeys(WebElement locator, String value) {
+        locator.sendKeys(value);
+        locator.click();
     }
 
 
-    public void sendKeysAndPressEnter(By selector, String value) {
-        WebElement element = getElement(selector);
-        element.sendKeys(value);
-        Actions actions = new Actions(driver);
-        actions.sendKeys(element, Keys.ENTER).build().perform();
+    public void sendKeysAndPressEnter(WebElement locator, String value) {
+        locator.sendKeys(value);
+        locator.sendKeys(Keys.ENTER);
     }
 
 
@@ -89,6 +85,22 @@ public class BaseObject {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void closeAllTabsExceptFirst() {
+        try {
+            int numberOfTabs = driver.getWindowHandles().size();
+            if (numberOfTabs > 1) {
+                for (int i = numberOfTabs - 1; i > 0; i--) {
+                    String winHandle = driver.getWindowHandles().toArray()[i].toString();
+                    driver.switchTo().window(winHandle);
+                    driver.close();
+                }
+                driver.switchTo().window(driver.getWindowHandles().toArray()[0].toString());
+            }
+        } catch (Exception e) {
+           e.printStackTrace();
         }
     }
 
